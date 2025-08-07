@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신나는 구구단 퀴즈!</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f7ff;
+            color: #333;
+        }
+        #quiz-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+        #problem {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #003d80;
+        }
+        #answer {
+            width: calc(100% - 24px);
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            border: 2px solid #b3d7ff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #answer:focus {
+            outline: none;
+            border-color: #0056b3;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            background-color: #007bff;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #feedback {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            height: 30px;
+        }
+        #score-container {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="quiz-container">
+        <h1>신나는 구구단 퀴즈!</h1>
+        <div id="problem"></div>
+        <input type="number" id="answer" placeholder="정답을 입력하세요" autofocus>
+        <button id="submit-btn">정답 확인</button>
+        <div id="feedback"></div>
+        <div id="score-container">점수: <span id="score">0</span></div>
+    </div>
+
+    <script>
+        // 필요한 HTML 요소들을 변수에 저장합니다.
+        const problemElement = document.getElementById('problem');
+        const answerElement = document.getElementById('answer');
+        const submitButton = document.getElementById('submit-btn');
+        const feedbackElement = document.getElementById('feedback');
+        const scoreElement = document.getElementById('score');
+
+        let currentNum1, currentNum2, correctAnswer;
+        let score = 0;
+
+        // 새로운 구구단 문제를 생성하는 함수입니다.
+        function generateProblem() {
+            // 2부터 9까지의 난수를 생성합니다.
+            currentNum1 = Math.floor(Math.random() * 8) + 2;
+            currentNum2 = Math.floor(Math.random() * 9) + 1;
+            correctAnswer = currentNum1 * currentNum2;
+
+            // 화면에 문제를 표시합니다.
+            problemElement.textContent = `${currentNum1} × ${currentNum2} = ?`;
+            
+            // 피드백 메시지와 입력 필드를 초기화합니다.
+            feedbackElement.textContent = '';
+            answerElement.value = '';
+            answerElement.focus();
+            
+            // 버튼 상태를 '정답 확인'으로 변경합니다.
+            submitButton.textContent = '정답 확인';
+            answerElement.disabled = false;
+        }
+
+        // 정답을 확인하는 함수입니다.
+        function checkAnswer() {
+            const userAnswer = parseInt(answerElement.value, 10);
+
+            // 사용자가 답을 입력했는지 확인합니다.
+            if (isNaN(userAnswer)) {
+                feedbackElement.textContent = '숫자를 입력해주세요!';
+                feedbackElement.style.color = 'orange';
+                return;
+            }
+
+            // 정답과 사용자 답을 비교합니다.
+            if (userAnswer === correctAnswer) {
+                feedbackElement.textContent = '정답입니다! 🎉';
+                feedbackElement.style.color = 'green';
+                score++; // 점수를 1 증가시킵니다.
+                scoreElement.textContent = score;
+            } else {
+                feedbackElement.textContent = `틀렸어요! 정답은 ${correctAnswer} 입니다.`;
+                feedbackElement.style.color = 'red';
+            }
+            
+            // 입력 필드를 비활성화하고, 버튼을 '다음 문제'로 변경합니다.
+            answerElement.disabled = true;
+            submitButton.textContent = '다음 문제';
+        }
+
+        // 버튼 클릭 이벤트를 처리합니다.
+        submitButton.addEventListener('click', () => {
+            if (submitButton.textContent === '정답 확인') {
+                checkAnswer();
+            } else {
+                generateProblem();
+            }
+        });
+
+        // Enter 키를 눌렀을 때의 이벤트를 처리합니다.
+        answerElement.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                // 버튼의 현재 상태에 따라 적절한 함수를 호출합니다.
+                if (submitButton.textContent === '정답 확인') {
+                    checkAnswer();
+                } else {
+                    generateProblem();
+                }
+            }
+        });
+
+        // 페이지가 로드되면 첫 문제를 생성합니다.
+        generateProblem();
+    </script>
+
+</body>
+</html>
